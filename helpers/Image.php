@@ -2,12 +2,11 @@
 
 namespace ijony\helpers;
 
+require_once '../Boostrap.php';
+
 use Imagine\Image\ManipulatorInterface;
 use Yii;
-
-defined('UPLOAD_FOLDER') or define('UPLOAD_FOLDER', 'upload');
-defined('THUMB_FOLDER') or define('THUMB_FOLDER', 'thumb');
-defined('BUFFER_FOLDER') or define('BUFFER_FOLDER', 'buffer');
+use yii\imagine\Image as YiiImage;
 
 /**
  * 图片处理方法
@@ -75,7 +74,7 @@ class Image
         if(!file_exists($thumbStatic)){
             Folder::mkdir(Folder::getStatic($thumbStatic));
 
-            \yii\imagine\Image::thumbnail($originalStatic, $width, $height, $mode)->save($thumbStatic, ['quality' => 90]);
+            YiiImage::thumbnail($originalStatic, $width, $height, $mode)->save($thumbStatic, ['quality' => 90]);
         }
 
         return Url::getStatic($thumb);

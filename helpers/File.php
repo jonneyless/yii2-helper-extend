@@ -2,11 +2,9 @@
 
 namespace ijony\helpers;
 
-use Yii;
+require_once '../Boostrap.php';
 
-defined('UPLOAD_FOLDER') or define('UPLOAD_FOLDER', 'upload');
-defined('THUMB_FOLDER') or define('THUMB_FOLDER', 'thumb');
-defined('BUFFER_FOLDER') or define('BUFFER_FOLDER', 'buffer');
+use Yii;
 
 /**
  * 文件夹处理方法
@@ -102,10 +100,10 @@ class File
      */
     public static function del($file, $image = false)
     {
-        $fileFull = Folder::getStatic($file);
+        $fileStatic = Folder::getStatic($file);
 
-        if(file_exists($fileFull) && !is_dir($fileFull)){
-            @unlink($fileFull);
+        if(file_exists($fileStatic) && !is_dir($fileStatic)){
+            @unlink($fileStatic);
         }
 
         if($image){
@@ -117,7 +115,7 @@ class File
                 $thumbFolder = str_replace(UPLOAD_FOLDER . '/', THUMB_FOLDER . '/', $pathInfo['dirname']);
             }
 
-            $thumbs = $thumbs = glob(Folder::getStatic($thumbFolder . '/' . $pathInfo['filename'] . '_*.' . $pathInfo['extension']));
+            $thumbs = glob(Folder::getStatic($thumbFolder . '/' . $pathInfo['filename'] . '_*.' . $pathInfo['extension']));
 
             if($thumbs){
                 foreach($thumbs as $thumb){

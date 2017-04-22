@@ -2,6 +2,8 @@
 
 namespace ijony\helpers;
 
+require_once '../Boostrap.php';
+
 use Yii;
 
 /**
