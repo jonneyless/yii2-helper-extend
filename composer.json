@@ -1,0 +1,35 @@
+{
+    "name": "jonneyless/yii2-helper-extend",
+    "description": "Yii2 Helper Utils Extend",
+    "keywords": [
+        "yii2",
+        "helper",
+        "jonneyless"
+    ],
+    "homepage": "https://github.com/jonneyless/yii2-helper-extend",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "support": {
+        "source": "https://github.com/jonneyless/yii2-helper-extend"
+    },
+    "authors": [
+        {
+            "name": "jony",
+            "email": "jonneyless@163.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": ">=2.0.6",
+        "yiisoft/yii2-imagine": "^2.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ijony\\": ""
+        }
+    },
+    "config": {
+        "process-timeout": 1800
+    }
+}
