@@ -17,10 +17,12 @@ use yii\imagine\Image as YiiImage;
 class Image
 {
 
+    const THUMB_MODE_CUT = 1;
+    const THUMB_MODE_ADAPT = 2;
+    const THUMB_MODE_FILL = 3;
+
     /**
      * 当原图不存在时用默认图替换
-     * 当宽度为 0 时直接输出原图
-     * 当宽度不为 0，高度为 0 时，以宽度为准按比例获取高度
      *
      * @param      $original
      * @param int  $width
@@ -30,7 +32,7 @@ class Image
      *
      * @return mixed
      */
-    public static function getImg($original, $width = 0, $height = 0, $default = true, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND)
+    public static function getImg($original, $width = 0, $height = 0, $default = true, $mode = self::THUMB_MODE_CUT)
     {
         if(substr($original, 0, 4) == 'http'){
             return $original;
@@ -50,13 +52,35 @@ class Image
             }
         }
 
-        if($width == 0){
-            return Url::getStatic($original);
+        list($oWidth, $oHeight) = getimagesize($oldImgFull);
+
+        if($width >= $oWidth && $height >= $oHeight){
+            return self::staticUrl($oldImg);
         }
 
-        if($height == 0){
-            list($oWidth, $oHeight) = getimagesize($originalStatic);
-            $height = intval(($oHeight * $width) / $oWidth);
+        if($mode == self::THUMB_MODE_ADAPT){
+            if($width > 0 && $height > 0){
+                $scale = min($width / $oWidth, $height / $oHeight);
+            }else if($width == 0){
+                $scale = $height / $oHeight;
+            }else if($height == 0){
+                $scale = $width / $oWidth;
+            }
+
+            $width = intval($oWidth * $scale);
+            $height = intval($oHeight * $scale);
+
+            $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND;
+        }else{
+            if($width == 0){
+                return self::staticUrl($oldImg);
+            }
+
+            if($height == 0){
+                $height = intval(($oHeight * $width) / $oWidth);
+            }
+
+            $mode = $mode == self::THUMB_MODE_CUT ? ManipulatorInterface::THUMBNAIL_OUTBOUND : ManipulatorInterface::THUMBNAIL_INSET;
         }
 
         $pathInfo = pathinfo($original);
