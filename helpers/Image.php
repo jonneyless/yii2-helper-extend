@@ -4,6 +4,7 @@ namespace ijony\helpers;
 
 require_once '../Boostrap.php';
 
+use Imagine\Image\ImageInterface;
 use Imagine\Image\ManipulatorInterface;
 use Yii;
 use yii\imagine\Image as YiiImage;
@@ -98,7 +99,9 @@ class Image
         if(!file_exists($thumbStatic)){
             Folder::mkdir(Folder::getStatic($thumbStatic));
 
-            YiiImage::thumbnail($originalStatic, $width, $height, $mode)->save($thumbStatic, ['quality' => 90]);
+            YiiImage::thumbnail($originalStatic, $width, $height, $mode)
+                ->interlace(ImageInterface::INTERLACE_LINE)
+                ->save($thumbStatic);
         }
 
         return Url::getStatic($thumb);
