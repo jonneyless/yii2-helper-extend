@@ -2,9 +2,10 @@
 
 namespace ijony\helpers;
 
-require_once '../Boostrap.php';
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 
 use Yii;
+use yii\helpers\Html;
 
 /**
  * 工具集
@@ -118,6 +119,35 @@ class Utils
         }
 
         return join("&", $params);
+    }
+
+    /**
+     * 标签
+     *
+     * @param $text
+     * @param $class
+     *
+     * @return string
+     */
+    public static function label($text, $class = '')
+    {
+        return Html::tag('span', $text, ['class' => 'label ' . $class]);
+    }
+
+    /**
+     * 正负标签
+     *
+     * @param $boolen
+     *
+     * @return string
+     */
+    public static function boolenLabel($boolen)
+    {
+        if($boolen){
+            return self::label('是', 'label-primary');
+        }
+
+        return self::label('否', 'label-danger');
     }
 
     /**
