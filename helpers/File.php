@@ -2,7 +2,7 @@
 
 namespace ijony\helpers;
 
-require_once '../Boostrap.php';
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 
 use Yii;
 
@@ -39,7 +39,7 @@ class File
      *
      * @return string
      */
-    public static function new($ext, $folder = '')
+    public static function newFile($ext, $folder = '')
     {
         if($folder){
             $folder = '/' . ltrim($folder, '/');
@@ -66,7 +66,7 @@ class File
      *
      * @return boolean
      */
-    public static function save($file, $source)
+    public static function saveFile($file, $source)
     {
         if(@copy($source, $file)){
             return true;
@@ -98,7 +98,7 @@ class File
      * @param      $file
      * @param bool $image
      */
-    public static function del($file, $image = false)
+    public static function delFile($file, $image = false)
     {
         $fileStatic = Folder::getStatic($file);
 

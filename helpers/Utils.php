@@ -104,21 +104,89 @@ class Utils
     }
 
     /**
+     * 检查身份证号码
+     *
+     * @param $idCard
+     *
+     * @return bool|int
+     */
+    public static function checkIdCard($idCard)
+    {
+        $cityCode = [
+            '11', '12', '13', '14', '15',
+            '21', '22', '23', '31', '32',
+            '33', '34', '35', '36', '37',
+            '41', '42', '43', '44', '45',
+            '46', '50', '51', '52', '53',
+            '54', '61', '62', '63', '64',
+            '65', '71', '81', '82', '91',
+        ];
+
+        // 判断基本格式
+        if(!preg_match('/^([\d]{17}[xX\d]|[\d]{15})$/', $idCard)){
+            return false;
+        }
+
+        // 判断前两位
+        if(!in_array(substr($idCard, 0, 2), $cityCode)){
+            return false;
+        }
+
+        // 统一字母
+        $idCard = preg_replace('/[xX]$/i', 'a', $idCard);
+        $length = strlen($idCard);
+
+        if($length == 18){
+            $birthday = substr($idCard, 6, 4) . '-' . substr($idCard, 10, 2) . '-' . substr($idCard, 12, 2);
+        }else{
+            $birthday = '19' . substr($idCard, 6, 2) . '-' . substr($idCard, 8, 2) . '-' . substr($idCard, 10, 2);
+        }
+
+        // 判断生日
+        if(date('Y-m-d', strtotime($birthday)) != $birthday){
+            return false;
+        }
+
+        // 算法
+        if($length == 18){
+            $sum = 0;
+
+            for($i = 17; $i >= 0; $i--){
+                $tmp = substr($idCard, 17 - $i, 1);
+                $sum += (pow(2, $i) % 11) * (($tmp == 'a') ? 10 : intval($tmp, 11));
+            }
+
+            if($sum % 11 != 1){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * 数组转字符串
      *
-     * @param $array
+     * @param      $array
+     * @param bool $isUrl
      *
      * @return string
      */
-    public static function arrayToStr($array)
+    public static function arrayToStr($array, $isUrl = true)
     {
-        $params = [];
+        if($isUrl){
+            $return = http_build_query($array);
+        }else{
+            $params = [];
 
-        foreach($array as $key => $val){
-            $params[] = $key . '=' . $val;
+            foreach($array as $key => $val){
+                $params[] = $key . '=' . $val;
+            }
+
+            $return = join("&", $params);
         }
 
-        return join("&", $params);
+        return $return;
     }
 
     /**
@@ -167,83 +235,12 @@ class Utils
             return stristr($_SERVER['HTTP_VIA'], "wap") ? true : false;
         }
         // 脑残法，判断手机发送的客户端标志,兼容性有待提高
-        if(isset ($_SERVER['HTTP_X_REQUESTED_WITH'])){
-            $clientkeywords = [
-                'nokia',
-                'sony',
-                'ericsson',
-                'mot',
-                'samsung',
-                'htc',
-                'sgh',
-                'lg',
-                'sharp',
-                'sie-',
-                'philips',
-                'panasonic',
-                'alcatel',
-                'lenovo',
-                'iphone',
-                'ipod',
-                'blackberry',
-                'meizu',
-                'android',
-                'netfront',
-                'symbian',
-                'ucweb',
-                'windowsce',
-                'palm',
-                'operamini',
-                'operamobi',
-                'openwave',
-                'nexusone',
-                'cldc',
-                'midp',
-                'wap',
-                'mobile',
-            ];
-            // 从HTTP_USER_AGENT中查找手机浏览器的关键字
-            if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
-                if(preg_match("/(" . implode('|', $clientkeywords) . ")/i", strtolower($_SERVER['HTTP_X_REQUESTED_WITH']))){
-                    return true;
-                }
-            }
-        }
-        // 脑残法，判断手机发送的客户端标志,兼容性有待提高
         if(isset ($_SERVER['HTTP_USER_AGENT'])){
             $clientkeywords = [
-                'nokia',
-                'sony',
-                'ericsson',
-                'mot',
-                'samsung',
-                'htc',
-                'sgh',
-                'lg',
-                'sharp',
-                'sie-',
-                'philips',
-                'panasonic',
-                'alcatel',
-                'lenovo',
-                'iphone',
-                'ipod',
-                'blackberry',
-                'meizu',
-                'android',
-                'netfront',
-                'symbian',
-                'ucweb',
-                'windowsce',
-                'palm',
-                'operamini',
-                'operamobi',
-                'openwave',
-                'nexusone',
-                'cldc',
-                'midp',
-                'wap',
-                'mobile',
+                'nokia', 'sony', 'ericsson', 'mot', 'samsung', 'htc', 'sgh', 'lg', 'sharp', 'sie-', 'philips',
+                'panasonic', 'alcatel', 'lenovo', 'iphone', 'ipod', 'blackberry', 'meizu', 'android', 'netfront',
+                'symbian', 'ucweb', 'windowsce', 'palm', 'operamini', 'operamobi', 'openwave', 'nexusone', 'cldc',
+                'midp', 'wap', 'mobile',
             ];
             // 从HTTP_USER_AGENT中查找手机浏览器的关键字
             if(isset($_SERVER['HTTP_USER_AGENT'])){

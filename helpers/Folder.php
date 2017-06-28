@@ -2,7 +2,7 @@
 
 namespace ijony\helpers;
 
-require_once '../Boostrap.php';
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 
 use Yii;
 

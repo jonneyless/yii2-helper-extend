@@ -2,7 +2,7 @@
 
 namespace ijony\helpers;
 
-require_once '../Boostrap.php';
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ManipulatorInterface;
@@ -129,14 +129,14 @@ class Image
         }
 
         if(!$newImg){
-            $newImg = File::new(pathinfo($oldImgStatic, PATHINFO_EXTENSION), 'image');
+            $newImg = File::newFile(pathinfo($oldImgStatic, PATHINFO_EXTENSION), 'image');
         }
 
         $newImgStatic = Folder::getStatic($newImg);
 
         Folder::mkdir(pathinfo($newImgStatic, PATHINFO_DIRNAME));
 
-        if(File::save($newImgStatic, $oldImgStatic)){
+        if(File::saveFile($newImgStatic, $oldImgStatic)){
             return $returnStatic ? $newImgStatic : $newImg;
         }
 
@@ -168,7 +168,7 @@ class Image
                     $ext = 'jpg';
                 }
 
-                $newImg = File::new($ext);
+                $newImg = File::newFile($ext);
 
                 $imgs[$md5] = $newImg;
 
