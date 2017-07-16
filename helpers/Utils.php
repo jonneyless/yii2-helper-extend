@@ -4,6 +4,7 @@ namespace ijony\helpers;
 
 include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 
+use Overtrue\Pinyin\Pinyin;
 use Yii;
 use yii\helpers\Html;
 
@@ -187,6 +188,15 @@ class Utils
         }
 
         return $return;
+    }
+
+    /**
+     * @inheritdoc
+     * @return \Overtrue\Pinyin\Pinyin
+     */
+    public static function pinyin()
+    {
+        return new Pinyin();
     }
 
     /**
