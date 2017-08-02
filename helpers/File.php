@@ -59,6 +59,29 @@ class File
     }
 
     /**
+     * 根据后缀生成上传文件相对路径
+     *
+     * @param        $ext
+     * @param string $folder
+     *
+     * @return string
+     */
+    public static function newBufferFile($ext, $folder)
+    {
+        $folder = BUFFER_FOLDER . '/' . ltrim($folder, '/') . '/';
+
+        Folder::mkdir(Folder::getStatic($folder));
+
+        $newFile = $folder . self::genName($ext);
+
+        while(file_exists(Folder::getStatic($newFile))){
+            $newFile = $folder . self::genName($ext);
+        }
+
+        return $newFile;
+    }
+
+    /**
      * 将文件保存
      *
      * @param string $file 目标文件
