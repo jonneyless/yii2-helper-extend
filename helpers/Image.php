@@ -35,6 +35,8 @@ class Image
      */
     public static function getImg($original, $width = 0, $height = 0, $default = true, $mode = self::THUMB_MODE_CUT)
     {
+        $assetUrl = Yii::$app->getAssetManager()->getPublishedUrl('@vendor/jonneyless/yii2-admin-asset/statics');
+
         if(substr($original, 0, 4) == 'http'){
             return $original;
         }
@@ -44,7 +46,7 @@ class Image
         if(!file_exists($originalStatic) || is_dir($originalStatic)){
             if($default){
                 if($default === true){
-                    return Url::getStatic('upload/default.jpg');
+                    return $assetUrl . '/img/default.jpg';
                 }else{
                     return Url::getStatic($default);
                 }
@@ -56,7 +58,7 @@ class Image
         list($oWidth, $oHeight) = getimagesize($oldImgFull);
 
         if($width >= $oWidth && $height >= $oHeight){
-            return self::staticUrl($oldImg);
+            return Url::getStatic($oldImg);
         }
 
         if($mode == self::THUMB_MODE_ADAPT){
@@ -74,7 +76,7 @@ class Image
             $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND;
         }else{
             if($width == 0){
-                return self::staticUrl($oldImg);
+                return Url::getStatic($oldImg);
             }
 
             if($height == 0){

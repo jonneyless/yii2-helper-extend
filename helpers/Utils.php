@@ -229,6 +229,20 @@ class Utils
     }
 
     /**
+     * 获取模型路径
+     *
+     * @param $modelName
+     *
+     * @return \libs\Zyd
+     */
+    public static function getModel($modelName)
+    {
+        $modelName = Inflector::id2camel($modelName, '_');
+
+        return 'common\models\\' . $modelName;
+    }
+
+    /**
      * 判断是否是手机登录
      *
      * @return bool
