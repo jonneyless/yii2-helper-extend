@@ -9,10 +9,12 @@ use Yii;
 /**
  * 网址处理方法
  *
+ * @inheritdoc
+ *
  * @author jony <jonneyless@163.com>
  * @since 1.0
  */
-class Url
+class Url extends \yii\helpers\Url
 {
 
     /**
@@ -26,6 +28,22 @@ class Url
     {
         if($path){
             $path = STATIC_URL . '/' . ltrim($path, '/');
+        }
+
+        return $path;
+    }
+
+    /**
+     * 生成完整访问地址
+     *
+     * @param null $path
+     *
+     * @return null|string
+     */
+    public static function getFull($path = null)
+    {
+        if($path){
+            $path = Yii::$app->request->getHostName() . '/' . ltrim($path, '/');
         }
 
         return $path;

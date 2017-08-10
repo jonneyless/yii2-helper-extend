@@ -25,7 +25,7 @@ class Utils
      */
     public static function dump($data, $end = true)
     {
-        echo '<pre>' . var_export($data, true) . '</pre>';
+        echo '<pre>' . var_dump($data, true) . '</pre>';
 
         if($end){
             Yii::$app->end();

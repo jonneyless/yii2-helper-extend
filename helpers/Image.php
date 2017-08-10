@@ -157,7 +157,7 @@ class Image
         preg_match_all('/src="data:\s*image\/(\w+);base64,([^"]+)"/', $content, $match);
 
         $imgs = [];
-        if(isset($match[2])){
+        if(isset($match[2]) && $match[2]){
             foreach($match[2] as $key => $data){
                 $md5 = md5($data);
 
