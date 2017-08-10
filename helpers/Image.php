@@ -55,10 +55,10 @@ class Image
             }
         }
 
-        list($oWidth, $oHeight) = getimagesize($oldImgFull);
+        list($oWidth, $oHeight) = getimagesize($originalStatic);
 
         if($width >= $oWidth && $height >= $oHeight){
-            return Url::getStatic($oldImg);
+            return Url::getStatic($original);
         }
 
         if($mode == self::THUMB_MODE_ADAPT){
@@ -76,7 +76,7 @@ class Image
             $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND;
         }else{
             if($width == 0){
-                return Url::getStatic($oldImg);
+                return Url::getStatic($original);
             }
 
             if($height == 0){
@@ -99,7 +99,7 @@ class Image
         $thumbStatic = Folder::getStatic($thumb);
 
         if(!file_exists($thumbStatic)){
-            Folder::mkdir(Folder::getStatic($thumbStatic));
+            Folder::mkdir(Folder::getStatic($thumbFolder));
 
             YiiImage::thumbnail($originalStatic, $width, $height, $mode)
                 ->interlace(ImageInterface::INTERLACE_LINE)
@@ -157,7 +157,7 @@ class Image
         preg_match_all('/src="data:\s*image\/(\w+);base64,([^"]+)"/', $content, $match);
 
         $imgs = [];
-        if(isset($match[2]) && $match[2]){
+        if(isset($match[2])){
             foreach($match[2] as $key => $data){
                 $md5 = md5($data);
 
