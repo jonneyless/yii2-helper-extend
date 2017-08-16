@@ -43,7 +43,7 @@ class Url extends \yii\helpers\Url
     public static function getFull($path = null)
     {
         if($path){
-            $path = Yii::$app->request->getHostName() . '/' . ltrim($path, '/');
+            $path = Yii::$app->request->getHostInfo() . '/' . ltrim($path, '/');
         }
 
         return $path;
