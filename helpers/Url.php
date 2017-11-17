@@ -34,6 +34,28 @@ class Url extends \yii\helpers\Url
     }
 
     /**
+     * 剔除静态文件
+     * 
+     * @param null $url
+     *
+     * @return mixed|null
+     */
+    public static function trimStatic($url = NULL)
+    {
+        static $staticLen;
+        
+        if($staticLen === NULL){
+            $staticLen = strlen(STATIC_URL . "/");
+        }
+        
+        if($url){
+            $url = substr($url, $staticLen);
+        }
+        
+        return $url;
+    }
+
+    /**
      * 生成完整访问地址
      *
      * @param null $path

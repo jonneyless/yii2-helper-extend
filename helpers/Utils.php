@@ -25,7 +25,11 @@ class Utils
      */
     public static function dump($data, $end = true)
     {
-        echo '<pre>' . var_dump($data, true) . '</pre>';
+        if(is_string($data)){
+            echo '<pre>' . $data . '</pre>';
+        }else{
+            echo '<pre>' . var_export($data, true) . '</pre>';
+        }
 
         if($end){
             Yii::$app->end();
