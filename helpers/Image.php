@@ -46,7 +46,7 @@ class Image
         if(!file_exists($originalStatic) || is_dir($originalStatic)){
             if($default){
                 if($default === true){
-                    return $assetUrl . '/img/default.jpg';
+                    return Url::getFull($assetUrl . '/img/default.jpg');
                 }else{
                     return Url::getStatic($default);
                 }
