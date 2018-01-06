@@ -27,7 +27,7 @@ class Url extends \yii\helpers\Url
     public static function getStatic($path = NULL)
     {
         if($path){
-            $path = STATIC_URL . '/' . ltrim($path, '/');
+            $path = self::getFull('/' . ltrim($path, '/'), 'static');
         }
 
         return $path;
@@ -45,7 +45,7 @@ class Url extends \yii\helpers\Url
         static $staticLen;
         
         if($staticLen === NULL){
-            $staticLen = strlen(STATIC_URL . "/");
+            $staticLen = strlen(self::getFull('/' . ltrim($path, '/'), 'static') . "/");
         }
         
         if($url){
