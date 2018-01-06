@@ -62,10 +62,19 @@ class Url extends \yii\helpers\Url
      *
      * @return null|string
      */
-    public static function getFull($path = null)
+    public static function getFull($path = null, $front = '')
     {
         if($path){
-            $path = Yii::$app->request->getHostInfo() . '/' . ltrim($path, '/');
+            $hostInfo = Yii::$app->request->getHostInfo();
+            $hostInfo = parse_url($hostInfo);
+            $scheme =  $hostInfo['scheme'];
+            $host =  $hostInfo['host'];
+            if($front){
+                $host = explode(".", $host);
+                $host[0] = $front;
+                $host = join(".", $host);
+            }
+            $path = $scheme . '://' . $host . '/' . ltrim($path, '/');
         }
 
         return $path;
