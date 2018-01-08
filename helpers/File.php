@@ -125,6 +125,10 @@ class File
     {
         $fileStatic = Folder::getStatic($file);
 
+        if(!file_exists($fileStatic)){
+            return;
+        }
+
         if(file_exists($fileStatic) && !is_dir($fileStatic)){
             @unlink($fileStatic);
         }
