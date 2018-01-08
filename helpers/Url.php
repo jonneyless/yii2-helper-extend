@@ -27,7 +27,7 @@ class Url extends \yii\helpers\Url
     public static function getStatic($path = NULL)
     {
         if($path){
-            $path = STATIC_URL . '/' . ltrim($path, '/');
+            $path = self::getFull('/' . ltrim($path, '/'), 'static');
         }
 
         return $path;
@@ -45,7 +45,7 @@ class Url extends \yii\helpers\Url
         static $staticLen;
         
         if($staticLen === NULL){
-            $staticLen = strlen(STATIC_URL . "/");
+            $staticLen = strlen(self::getFull('/' . ltrim($path, '/'), 'static') . "/");
         }
         
         if($url){
@@ -62,10 +62,19 @@ class Url extends \yii\helpers\Url
      *
      * @return null|string
      */
-    public static function getFull($path = null)
+    public static function getFull($path = null, $front = '')
     {
         if($path){
-            $path = Yii::$app->request->getHostInfo() . '/' . ltrim($path, '/');
+            $hostInfo = Yii::$app->request->getHostInfo();
+            $hostInfo = parse_url($hostInfo);
+            $scheme =  $hostInfo['scheme'];
+            $host =  $hostInfo['host'];
+            if($front){
+                $host = explode(".", $host);
+                $host[0] = $front;
+                $host = join(".", $host);
+            }
+            $path = $scheme . '://' . $host . '/' . ltrim($path, '/');
         }
 
         return $path;
