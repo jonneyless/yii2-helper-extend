@@ -58,11 +58,12 @@ class Url extends \yii\helpers\Url
     /**
      * 生成完整访问地址
      *
-     * @param null $path
+     * @param string   $path
+     * @param string $front
      *
      * @return null|string
      */
-    public static function getFull($path = null, $front = '')
+    public static function getFull($path = NULL, $front = '')
     {
         if($path){
             $hostInfo = Yii::$app->request->getHostInfo();
