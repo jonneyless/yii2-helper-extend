@@ -7,6 +7,7 @@ include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ManipulatorInterface;
 use Yii;
+use yii\base\ErrorException;
 use yii\imagine\Image as YiiImage;
 
 /**
@@ -29,9 +30,10 @@ class Image
      * @param int  $width
      * @param int  $height
      * @param bool $default
-     * @param      $mode
+     * @param int  $mode
      *
      * @return mixed
+     * @throws \Imagine\Image\InvalidArgumentException
      */
     public static function getImg($original, $width = 0, $height = 0, $default = true, $mode = self::THUMB_MODE_CUT)
     {
@@ -103,10 +105,96 @@ class Image
 
             YiiImage::thumbnail($originalStatic, $width, $height, $mode)
                 ->interlace(ImageInterface::INTERLACE_LINE)
-                ->save($thumbStatic);
+                ->save($thumbStatic, ['quality' => 100]);
         }
 
         return Url::getStatic($thumb);
+    }
+
+    /**
+     * 缩小图片
+     *
+     * @param     $image
+     * @param     $width
+     * @param int $height
+     *
+     * @return string
+     * @throws \Imagine\Image\InvalidArgumentException
+     */
+    public static function resizeImg($image, $width, $height = 0)
+    {
+        $newImg = self::getImg($image, $width, $height, false, ManipulatorInterface::THUMBNAIL_OUTBOUND);
+
+        if(self::copyImg($newImg, $image)){
+            File::delFile($newImg);
+        }
+    }
+
+    /**
+     * @param        $original
+     * @param        $maxHeight
+     * @param string $subFolder
+     *
+     * @return array
+     * @throws \Imagine\Image\InvalidArgumentException
+     * @throws \yii\base\ErrorException
+     */
+    public static function verticalSplitImg($original, $maxHeight, $subFolder = 'image')
+    {
+        $originalStatic = Folder::getStatic($original);
+
+        if(!file_exists($originalStatic) || is_dir($originalStatic)){
+            throw new ErrorException('Not image file！');
+        }
+
+        list($oWidth, $oHeight) = getimagesize($originalStatic);
+
+        $quantity = ceil($oHeight / $maxHeight);
+
+        if($quantity == 1){
+            return [
+                $original
+            ];
+        }
+
+        $perHeight = ceil($oHeight / $quantity);
+
+        $ext = pathinfo($originalStatic, PATHINFO_EXTENSION);
+        $startY = 0;
+        $return = [];
+
+        for($index = 0; $index < $quantity; $index++){
+            $newImg = File::newBufferFile($ext, $subFolder);
+
+            if($startY + $perHeight > $oHeight){
+                $perHeight = $oHeight - $startY;
+            }
+
+            self::cropImg($originalStatic, Folder::getStatic($newImg), $oWidth, $perHeight, [0, $startY]);
+
+            $return[] = $newImg;
+
+            $startY += $perHeight;
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param       $image
+     * @param       $newImg
+     * @param       $width
+     * @param       $height
+     * @param array $start
+     *
+     * @return \Imagine\Image\ImageInterface
+     * @throws \Imagine\Image\InvalidArgumentException
+     */
+    public static function cropImg($image, $newImg, $width, $height, array $start = [0, 0])
+    {
+        return YiiImage::crop($image, $width, $height, $start)
+            ->interlace(ImageInterface::INTERLACE_LINE)
+            ->save($newImg, ['quality' => 100]);
     }
 
     /**
@@ -114,11 +202,12 @@ class Image
      *
      * @param string  $oldImg
      * @param string  $newImg
+     * @param string  $subFolder
      * @param boolean $returnStatic
      *
      * @return string
      */
-    public static function copyImg($oldImg, $newImg = '', $returnStatic = false)
+    public static function copyImg($oldImg, $newImg = '', $subFolder = 'image', $returnStatic = false)
     {
         if(substr($oldImg, 0, 4) != 'http'){
             $oldImgStatic = Folder::getStatic($oldImg);
@@ -131,12 +220,16 @@ class Image
         }
 
         if(!$newImg){
-            $newImg = File::newFile(pathinfo($oldImgStatic, PATHINFO_EXTENSION), 'image');
+            $newImg = File::newFile(pathinfo($oldImgStatic, PATHINFO_EXTENSION), $subFolder);
         }
 
         $newImgStatic = Folder::getStatic($newImg);
 
         Folder::mkdir(pathinfo($newImgStatic, PATHINFO_DIRNAME));
+
+        if(file_exists($newImgStatic)){
+            File::delFile($newImg);
+        }
 
         if(File::saveFile($newImgStatic, $oldImgStatic)){
             return $returnStatic ? $newImgStatic : $newImg;
