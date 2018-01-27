@@ -25,7 +25,11 @@ class Utils
      */
     public static function dump($data, $end = true)
     {
-        echo '<pre>' . var_export($data, true) . '</pre>';
+        if(is_string($data)){
+            echo '<pre>' . $data . '</pre>';
+        }else{
+            echo '<pre>' . var_export($data, true) . '</pre>';
+        }
 
         if($end){
             Yii::$app->end();
@@ -226,6 +230,20 @@ class Utils
         }
 
         return self::label('否', 'label-danger');
+    }
+
+    /**
+     * 获取模型路径
+     *
+     * @param $modelName
+     *
+     * @return \libs\Zyd
+     */
+    public static function getModel($modelName)
+    {
+        $modelName = Inflector::id2camel($modelName, '_');
+
+        return 'common\models\\' . $modelName;
     }
 
     /**

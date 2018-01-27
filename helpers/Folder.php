@@ -104,4 +104,15 @@ class Folder
 
         return rmdir($folder);
     }
+
+    /**
+     * 清理用户临时图片
+     */
+    public static function clearBuffer($folder)
+    {
+        $bufferFolder = BUFFER_FOLDER . '/' . ltrim($folder, '/') . '/';
+
+        self::rmdir(self::getStatic($bufferFolder));
+    }
+
 }
