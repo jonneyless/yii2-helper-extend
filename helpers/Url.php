@@ -9,7 +9,7 @@ use Yii;
 /**
  * 网址处理方法
  *
- * @inheritdoc
+ * {@inheritdoc}
  *
  * @author jony <jonneyless@163.com>
  * @since 1.0
