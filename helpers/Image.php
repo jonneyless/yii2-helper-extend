@@ -39,6 +39,10 @@ class Image
     {
         $assetUrl = Yii::$app->getAssetManager()->getPublishedUrl('@vendor/jonneyless/yii2-admin-asset/statics');
 
+        if(!file_exists($assetUrl)){
+            Yii::$app->getAssetManager()->publish('@vendor/jonneyless/yii2-admin-asset/statics');
+        }
+
         if(substr($original, 0, 4) == 'http'){
             return $original;
         }
