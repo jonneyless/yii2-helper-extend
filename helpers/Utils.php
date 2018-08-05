@@ -195,7 +195,7 @@ class Utils
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      * @return \Overtrue\Pinyin\Pinyin
      */
     public static function pinyin()
