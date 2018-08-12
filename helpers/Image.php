@@ -211,7 +211,7 @@ class Image
      *
      * @return string
      */
-    public static function copyImg($oldImg, $newImg = '', $subFolder = 'image', $returnStatic = false)
+    public static function copyImg($oldImg, $newImg = '', $subFolder = '', $returnStatic = false)
     {
         if(substr($oldImg, 0, 4) != 'http'){
             $oldImgStatic = Folder::getStatic($oldImg);
