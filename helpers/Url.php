@@ -34,7 +34,7 @@ class Url extends \yii\helpers\Url
     }
 
     /**
-     * 剔除静态文件
+     * 剔除静态文件访问路径
      * 
      * @param null $url
      *
@@ -65,19 +65,28 @@ class Url extends \yii\helpers\Url
      */
     public static function getFull($path = NULL, $front = '')
     {
-        if($path){
+        $baseHost = Yii::$app->request->getHostInfo();
+
+        if ($front) {
             $hostInfo = Yii::$app->request->getHostInfo();
             $hostInfo = parse_url($hostInfo);
             $scheme =  $hostInfo['scheme'];
             $host =  $hostInfo['host'];
-            if($front){
-                $host = explode(".", $host);
-                $host[0] = $front;
-                $host = join(".", $host);
-            }
-            $path = $scheme . '://' . $host . '/' . ltrim($path, '/');
+
+            $host = explode(".", $host);
+            $host[0] = $front;
+            $host = join(".", $host);
+
+            $baseHost = $scheme . '://' . $host;
         }
 
-        return $path;
+        if ($path) {
+            if (is_array($path)) {
+                $path = self::to($path);
+            }
+            $baseHost = $baseHost . '/' . ltrim($path, '/');
+        }
+
+        return $baseHost;
     }
 }

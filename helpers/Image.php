@@ -30,12 +30,13 @@ class Image
      * @param int  $width
      * @param int  $height
      * @param bool $default
+     * @param bool $onlyPath
      * @param int  $mode
      *
      * @return mixed
      * @throws \Imagine\Image\InvalidArgumentException
      */
-    public static function getImg($original, $width = 0, $height = 0, $default = true, $mode = self::THUMB_MODE_CUT)
+    public static function getImg($original, $width = 0, $height = 0, $default = true, $onlyPath = false, $mode = self::THUMB_MODE_CUT)
     {
         $assetUrl = Yii::$app->getAssetManager()->getPublishedUrl('@vendor/jonneyless/yii2-admin-asset/statics');
 
@@ -112,7 +113,7 @@ class Image
                 ->save($thumbStatic, ['quality' => 100]);
         }
 
-        return Url::getStatic($thumb);
+        return $onlyPath ? $thumb : Url::getStatic($thumb);
     }
 
     /**
@@ -213,7 +214,7 @@ class Image
      */
     public static function copyImg($oldImg, $newImg = '', $subFolder = '', $returnStatic = false)
     {
-        if(substr($oldImg, 0, 4) != 'http'){
+        if (!parse_url($oldImg, PHP_URL_SCHEME)) {
             $oldImgStatic = Folder::getStatic($oldImg);
 
             if(!$oldImg || !file_exists($oldImgStatic)){
@@ -249,7 +250,7 @@ class Image
      *
      * @return mixed
      */
-    public static function recoverImg($content)
+    public static function recoverImg($content, $folder = '')
     {
         preg_match_all('/src="data:\s*image\/(\w+);base64,([^"]+)"/', $content, $match);
 
@@ -267,7 +268,7 @@ class Image
                     $ext = 'jpg';
                 }
 
-                $newImg = File::newFile($ext);
+                $newImg = File::newFile($ext, $folder);
 
                 $imgs[$md5] = $newImg;
 

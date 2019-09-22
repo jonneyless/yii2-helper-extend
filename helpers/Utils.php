@@ -7,6 +7,7 @@ include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Boostrap.php';
 use Overtrue\Pinyin\Pinyin;
 use Yii;
 use yii\helpers\Html;
+use yii\helpers\Inflector;
 
 /**
  * 工具集
@@ -44,10 +45,20 @@ class Utils
      *
      * @return string
      */
-    public static function getRand($len = 12, $onlyNum = false)
+    public static function getRand($len = 12, $onlyNum = false, $lowercase = false)
     {
-        $chars = $onlyNum ? '0123456789' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        $chars = '0123456789';
+
+        if (!$onlyNum) {
+            $chars .= 'abcdefghijklmnopqrstuvwxyz';
+
+            if (!$lowercase) {
+                $chars .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            }
+        }
+
         mt_srand((double)microtime() * 1000000 * getmypid());
+
         $return = '';
         while(strlen($return) < $len){
             $return .= substr($chars, (mt_rand() % strlen($chars)), 1);
@@ -211,9 +222,11 @@ class Utils
      *
      * @return string
      */
-    public static function label($text, $class = '')
+    public static function label($text, $class = '', $options = [])
     {
-        return Html::tag('span', $text, ['class' => 'label ' . $class]);
+        $options['class'] = 'label ' . $class;
+
+        return Html::tag('span', $text, $options);
     }
 
     /**
@@ -241,9 +254,12 @@ class Utils
      */
     public static function getModel($modelName)
     {
+        $folder = explode("\\", $modelName);
+        $modelName = array_pop($folder);
         $modelName = Inflector::id2camel($modelName, '_');
+        $folder = array_merge(['common', 'models'], $folder);
 
-        return 'common\models\\' . $modelName;
+        return join("\\", $folder) . "\\" . $modelName;
     }
 
     /**

@@ -19,47 +19,88 @@ class File
      * 生成文件名
      *
      * @param string $ext
+     * @param array $options
      *
      * @return string
      */
-    public static function genName($ext)
+    public static function genName($ext, $options = [])
     {
-        list($usec, $sec) = explode(" ", microtime());
+        if ($ext) {
+            $ext = "." . ltrim($ext, ".");
+        }
 
-        $fix = substr($usec, 2, 4);
+        $onlyNum = false;
+        $lowercase = false;
+        $len = 32;
 
-        return date('YmdHis') . $fix . "." . ltrim($ext, ".");
+        if (is_array($options)) {
+            if (isset($options['onlyNum'])) {
+                $onlyNum = $options['onlyNum'];
+            }
+
+            if (isset($options['lowercase'])) {
+                $lowercase = $options['lowercase'];
+            }
+
+            if (isset($options['len'])) {
+                $len = $options['len'];
+            }
+
+            if (isset($options['md5'])) {
+                return md5($options['md5']) . $ext;
+            }
+        }
+
+        return Utils::getRand($len, $onlyNum, $lowercase) . $ext;
     }
 
     /**
      * 根据后缀生成上传文件相对路径
      *
      * @param        $ext
-     * @param string $folder
+     * @param array $options
      *
      * @return string
      */
-    public static function newFile($ext, $folder = '')
+    public static function newFile($ext, $options = [])
     {
-        if($folder){
-            $folder = '/' . ltrim($folder, '/');
+
+        $folder = Utils::env('UPLOAD_FOLDER', 'upload') . '/' . date('Ym') . '/' . date('d') . '/' . date('H');
+
+        if (is_string($options)) {
+            $folder = $options;
+        } else if (is_array($options) && isset($options['folder'])) {
+            $folder = $options['folder'];
+            unset($options['folder']);
         }
 
-        $folder = UPLOAD_FOLDER . $folder . '/' . date('Ym') . '/' . date('d') . '/'. date('H') . '/';
+        $folder = rtrim($folder, "/") . "/";
 
         Folder::mkdir(Folder::getStatic($folder));
 
-        $newFile = $folder . self::genName($ext);
+        if (is_array($options) && isset($options['filename'])) {
+            $newFile = $folder . $options['filename'] . '.' . $ext;
 
-        while(file_exists(Folder::getStatic($newFile))){
-            $newFile = $folder . self::genName($ext);
+            if (!isset($options['cover'])) {
+                $options['cover'] = true;
+            }
+
+            if ($options['cover'] && file_exists(Folder::getStatic($newFile))) {
+                self::delFile($newFile);
+            }
+        } else {
+            $newFile = $folder . self::genName($ext, $options);
+
+            while (file_exists(Folder::getStatic($newFile))) {
+                $newFile = $folder . self::genName($ext, $options);
+            }
         }
 
         return $newFile;
     }
 
     /**
-     * 根据后缀生成上传文件相对路径
+     * 生成暂存目录下的文件名
      *
      * @param        $ext
      * @param string $folder
@@ -79,6 +120,18 @@ class File
         }
 
         return $newFile;
+    }
+
+    /**
+     * 判断是否为暂存目录下的文件
+     *
+     * @param $filePath
+     */
+    public static function isBufferFile($filePath)
+    {
+        $bufferFolder = BUFFER_FOLDER;
+
+        return substr($filePath, 0, strlen($bufferFolder)) == $bufferFolder;
     }
 
     /**
