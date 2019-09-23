@@ -65,7 +65,7 @@ class File
     public static function newFile($ext, $options = [])
     {
 
-        $folder = Utils::env('UPLOAD_FOLDER', 'upload') . '/' . date('Ym') . '/' . date('d') . '/' . date('H');
+        $folder = UPLOAD_FOLDER . '/' . date('Ym') . '/' . date('d') . '/' . date('H');
 
         if (is_string($options)) {
             $folder = $options;
