@@ -67,11 +67,13 @@ class File
 
         $folder = UPLOAD_FOLDER . '/' . date('Ym') . '/' . date('d') . '/' . date('H');
 
-        if (is_string($options)) {
-            $folder = $options;
-        } else if (is_array($options) && isset($options['folder'])) {
-            $folder = $options['folder'];
-            unset($options['folder']);
+        if ($options) {
+            if (is_string($options)) {
+                $folder = $options;
+            } else if (is_array($options) && isset($options['folder'])) {
+                $folder = $options['folder'];
+                unset($options['folder']);
+            }
         }
 
         $folder = rtrim($folder, "/") . "/";
